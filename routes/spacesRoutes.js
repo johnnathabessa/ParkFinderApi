@@ -1,20 +1,18 @@
 import express from "express";
+import SpacesRepository from "../repositories/spacesRepository.js";
+import SpacesController from "../controller/spacesController.js";
 
 const router = express.Router();
 
-router.get("/", (req, res) => {
-    //Pagar Vagas
-    res.send('GET /spaces');
-    
-})
+router.get("/", SpacesController.getSpaces);
+router.post("/", SpacesController.createSpace);
+router.delete("/:id",SpacesController.deleteSpace);
+router.put("/:id", SpacesController.updateSpace);
+router.get("/:id", SpacesController.getSpacesById);
 
-router.post("/", (req, res) => {
-    //Adicionar Vaga
-    res.send('Post /spaces')
-})
-router.delete("/:id", (req, res) => {
-    //Remover Vaga
-    res.send('Delete /spaces/:id')
-})
+router.get('/:id/get-price', (req,res)=>{})
+router.post('/:id/entry', (req,res)=>{})
+router.post('/:id/exit', (req,res)=>{})
+
 
 export default router;
