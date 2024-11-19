@@ -1,9 +1,9 @@
 import { query } from "../config/db.js";
 import {differenceInMinutes} from 'date-fns';
 
-const VALUES_hOUR =10;
-const LIMIT_FRACTION = 1;
-const MINUTES_FRACTION = 15;
+const VALUES_HOUR = 10;
+const LIMIT_MINUTES = 60;
+const FRACTION_MINUTES = 15;
 const VALUES_FRACTION = 3;
 
 const SpacesRepository = {
@@ -37,7 +37,7 @@ const SpacesRepository = {
         return result.rows[0];
     },
     async markEntry(id) {
-        const text = 'UPDATE spaces SET lastEntry = now() occuped = true WHERE id = $1 RETURNING *';
+        const text = 'UPDATE spaces SET lastEntry = now(), occuped = true WHERE id = $1 RETURNING *';
         const values = [id];
         const result = await query(text, values);
         return result.rows[0];
@@ -46,12 +46,28 @@ const SpacesRepository = {
         const text = 'SELECT lastEntry FROM spaces WHERE id = $1;';
         const values = [id];
         const result = await query(text, values);
-        const lastEntry  = result.rows[0].lastEntry;
-        const minutes = differenceInMinutes(new Date(), lastEntry);
-        const hours =Math.ceil(minutes /60);
-        const fractions =Math.ceil(((minutes - 60 ) % 60) / MINUTES_FRACTION);
-        const price = (hours * VALUES_HOUR) + (fractions * VALUES_FRACTION);
-        return price;
+
+        let lastEntry  = result.rows[0].lastentry;
+        let now = new Date();
+
+        let minutesPassed = Math.abs(differenceInMinutes(now, lastEntry));
+      
+        let finalValue = 0;
+
+        if (minutesPassed > LIMIT_MINUTES) {
+            finalValue = VALUES_HOUR + (minutesPassed - 60) / FRACTION_MINUTES * VALUES_FRACTION;    
+        } else {
+            finalValue = VALUES_HOUR;
+        }
+        
+        
+        return finalValue.toFixed(2);
+    },
+    async exiteSpace(id) {
+        const text = 'UPDATE spaces SET lastEntry = null, occuped = false WHERE id = $1 RETURNING *';
+        const values = [id];
+        const result = await query(text, values);
+        return result.rows[0];
     }
 }
 

@@ -25,6 +25,21 @@ const SpacesController ={
         const id = req.params.id;
         const deletedSpace = await SpacesRepository.deleteSpace(id);
         res.send(deletedSpace);
+    },
+    async markEntry(req, res) {
+        const id = req.params.id;
+        const updatedSpace = await SpacesRepository.markEntry(id);
+        res.send(updatedSpace);
+    },
+    async getPriceOfExit(req, res) {
+        const id = req.params.id;
+        const price = await SpacesRepository.getPriceOfExit(id);
+        res.send ({price});
+    },
+    async markExit(req, res) {
+        const id = req.params.id;
+        const updatedSpace = await SpacesRepository.exiteSpace(id);
+        res.send(updatedSpace);
     }
 }
 
